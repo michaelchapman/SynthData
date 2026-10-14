@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synthdata"
+version = "0.1.0"
+description = "Generate synthetic health data from dataset metadata and disclosure-controlled summary statistics"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+synthdata = "synthdata.cli:main"
+
+[tool.setuptools]
+packages = ["synthdata"]

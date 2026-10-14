@@ -1,0 +1,228 @@
+{
+  "profile": "synthdata-profile/0.1",
+  "name": "omop-mini",
+  "title": "OMOP-style example: people, visits and conditions",
+  "version": "1.0.0",
+  "tier": 0,
+  "description": "A data dictionary only, with no statistics. Shows what the generator does with structure alone.",
+  "resources": [
+    {
+      "name": "person",
+      "description": "One row per person.",
+      "schema": {
+        "fields": [
+          {
+            "name": "person_id",
+            "type": "integer",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "gender_concept_id",
+            "type": "integer",
+            "description": "OMOP gender concept (8507 male, 8532 female)",
+            "constraints": {
+              "required": true,
+              "enum": [
+                8507,
+                8532
+              ]
+            }
+          },
+          {
+            "name": "year_of_birth",
+            "type": "year",
+            "constraints": {
+              "required": true,
+              "minimum": 1920,
+              "maximum": 2020
+            }
+          },
+          {
+            "name": "ethnicity_source_value",
+            "type": "string",
+            "description": "Ethnic category as recorded",
+            "constraints": {
+              "enum": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "Z"
+              ]
+            }
+          }
+        ],
+        "primaryKey": [
+          "person_id"
+        ]
+      }
+    },
+    {
+      "name": "visit_occurrence",
+      "description": "One row per visit.",
+      "schema": {
+        "fields": [
+          {
+            "name": "visit_occurrence_id",
+            "type": "integer",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "person_id",
+            "type": "integer",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "visit_concept_id",
+            "type": "integer",
+            "description": "9201 inpatient, 9202 outpatient, 9203 emergency",
+            "constraints": {
+              "required": true,
+              "enum": [
+                9201,
+                9202,
+                9203
+              ]
+            }
+          },
+          {
+            "name": "visit_start_date",
+            "type": "date",
+            "constraints": {
+              "required": true,
+              "minimum": "2015-01-01",
+              "maximum": "2023-12-31"
+            }
+          },
+          {
+            "name": "visit_end_date",
+            "type": "date",
+            "constraints": {
+              "minimum": "2015-01-01",
+              "maximum": "2024-03-31"
+            }
+          }
+        ],
+        "primaryKey": [
+          "visit_occurrence_id"
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "person_id"
+            ],
+            "reference": {
+              "resource": "person",
+              "fields": [
+                "person_id"
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "type": "notBefore",
+          "field": "visit_end_date",
+          "reference": "visit_start_date"
+        }
+      ]
+    },
+    {
+      "name": "condition_occurrence",
+      "description": "One row per diagnosis recorded during a visit.",
+      "schema": {
+        "fields": [
+          {
+            "name": "condition_occurrence_id",
+            "type": "integer",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "visit_occurrence_id",
+            "type": "integer",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "person_id",
+            "type": "integer",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "condition_concept_id",
+            "type": "integer",
+            "description": "OMOP standard condition concept (SNOMED CT based)",
+            "constraints": {
+              "required": true,
+              "enum": [
+                201826,
+                320128,
+                255573,
+                4329847,
+                80180,
+                432867,
+                260139,
+                437663
+              ]
+            }
+          },
+          {
+            "name": "condition_start_date",
+            "type": "date",
+            "constraints": {
+              "required": true,
+              "minimum": "2015-01-01",
+              "maximum": "2024-03-31"
+            }
+          }
+        ],
+        "primaryKey": [
+          "condition_occurrence_id"
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "visit_occurrence_id"
+            ],
+            "reference": {
+              "resource": "visit_occurrence",
+              "fields": [
+                "visit_occurrence_id"
+              ]
+            }
+          },
+          {
+            "fields": [
+              "person_id"
+            ],
+            "reference": {
+              "resource": "person",
+              "fields": [
+                "person_id"
+              ]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "type": "notBefore",
+          "field": "condition_start_date",
+          "reference": "parent.visit_start_date"
+        }
+      ]
+    }
+  ]
+}
