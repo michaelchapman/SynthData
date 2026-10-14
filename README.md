@@ -84,3 +84,7 @@ python -m pytest
 
 Background research and the design rationale are in the project's findings
 document.
+
+## Licence
+
+Apache License 2.0. See [LICENSE](LICENSE).
